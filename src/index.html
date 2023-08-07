@@ -1,0 +1,48 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Pendula</title>
+  <script src="main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+</head>
+
+<body>
+  <div id="myapp"></div>
+  <script>
+   var app = Elm.Main.init({
+       node: document.getElementById('myapp')
+   });
+
+   const activateTone = (() => {
+       let toneActivated = false;
+       return async () => {
+           if (!toneActivated) {
+               await Tone.start();
+               console.log("Tone activated");
+               toneActivated = true;
+           }
+       }
+   })();
+
+   const playTone = (() => {
+       let synth = new Tone.PolySynth().toDestination();
+       return (tones) => {
+           const now = Tone.now();
+           synth.triggerAttackRelease(tones, "8n", now);
+       }
+   })();
+
+       
+   app.ports.sendMessage.subscribe(async (message) => {
+       switch (message.kind) {
+           case "start":
+               await activateTone();
+               break;
+           case "play":
+               playTone(message.tones);
+               break;
+       }
+   });
+  </script>
+</body>
+</html>
