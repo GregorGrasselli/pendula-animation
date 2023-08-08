@@ -6,13 +6,13 @@ import Messages exposing (Msg)
 import String
 
 
-drawBackground : Int -> Int -> Float -> Int -> List (Svg Msg)
+drawBackground : Float -> Float -> Float -> Float -> List (Svg Msg)
 drawBackground width_ height_ lineX topBallRadius =
     let middle = String.fromFloat lineX
-        topRadiusStr = String.fromInt topBallRadius
-        heightStr = String.fromInt height_
+        topRadiusStr = String.fromFloat topBallRadius
+        heightStr = String.fromFloat height_
     in
-    [ rect [ width (String.fromInt width_)
+    [ rect [ width (String.fromFloat width_)
            , height heightStr
            , fill "#dbfacf"
            , x "0"

@@ -5,10 +5,11 @@ import Svg.Attributes exposing (..)
 import Messages exposing (..)
 import List
 
+{-| This has the state of a pendulum. All lengths are in centimeters and all angles in radians -}
 type alias Pendulum =
     { weightRadius : Float
-    , initialAngleRadians : Float
-    , currentAngleRadians : Float
+    , initialAngle : Float
+    , currentAngle : Float
     , marked : Bool
     , stringLength : Float
     , tone : String
@@ -30,13 +31,13 @@ updatePendulum timeSeconds pendulum =
         newMarked = shouldHaveEffects pendulum newAngle timeSeconds
         command = if newMarked == pendulum.marked || not newMarked then Nothing else Just pendulum.tone
     in
-        ({ pendulum | currentAngleRadians = newAngle, marked = newMarked }, command)
+        ({ pendulum | currentAngle = newAngle, marked = newMarked }, command)
 
-drawPendulum : (Float, Float) -> Float -> Pendulum -> List (Svg.Svg Msg)
-drawPendulum ((originX, originY) as stringOrigin) timeSeconds  pendulum =
+drawPendulum : (Float, Float) -> Pendulum -> List (Svg.Svg Msg)
+drawPendulum ((originX, originY) as stringOrigin) pendulum =
     let d = distanceToWeightCenter pendulum
-        (circleX, circleY) = getPosition stringOrigin pendulum.currentAngleRadians d
-        (stringX, stringY) = getPosition stringOrigin pendulum.currentAngleRadians pendulum.stringLength
+        (circleX, circleY) = getPosition stringOrigin pendulum.currentAngle d
+        (stringX, stringY) = getPosition stringOrigin pendulum.currentAngle pendulum.stringLength
     in
         [ circle [ cx circleX
                  , cy circleY
@@ -53,9 +54,9 @@ drawPendulum ((originX, originY) as stringOrigin) timeSeconds  pendulum =
                ] []
         ]
 
--- Making this bigger makes the pendulums faster
+-- Making this bigger makes the pendulums faster (this is the actual value in cm/(s^2))
 gravitationalConstant : Float
-gravitationalConstant = 0.0003
+gravitationalConstant = 981
 
 distanceToWeightCenter : Pendulum -> Float
 distanceToWeightCenter pendulum = pendulum.stringLength + pendulum.weightRadius
@@ -64,7 +65,7 @@ getCurrentAngle : Pendulum -> Float -> Float
 getCurrentAngle  pendulum timeSeconds =
     let d = distanceToWeightCenter pendulum
     in
-        pendulum.initialAngleRadians * cos (sqrt (gravitationalConstant/d) * timeSeconds)
+        pendulum.initialAngle * cos (sqrt (gravitationalConstant/d) * timeSeconds)
 
 getCoordinateFromPolar : Float -> Float -> Float -> String
 getCoordinateFromPolar origin multiplier distance = String.fromFloat (origin + multiplier * distance)
@@ -79,7 +80,7 @@ getPosition (originX, originY) angle distance =
 movementDirection : Pendulum -> Float -> Order
 movementDirection pendulum timeSeconds =
     let d = distanceToWeightCenter pendulum
-        angleDerivative = -pendulum.initialAngleRadians * sin (sqrt (gravitationalConstant/d) * timeSeconds)
+        angleDerivative = -pendulum.initialAngle * sin (sqrt (gravitationalConstant/d) * timeSeconds)
     in
         compare angleDerivative 0
 
