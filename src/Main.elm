@@ -61,10 +61,11 @@ view model =
             [ HA.style "display" "flex"
             , HA.style "flex-direction" "column"
             , HA.style "justify-content" "center"
+            , HA.style "max-width" "700px"
             ]
             [ svg
               [ width "100%"
-              , viewBox (String.join " " ["0", "0", widthStr, heightStr])
+              , viewBox (String.join " " ["0", "-5", widthStr, heightStr])
               ]
               (
                (Background.drawBackground width_ height_ (width_ / 2) topBallRadius)

@@ -5678,7 +5678,8 @@ var $author$project$Main$view = function (model) {
 			[
 				A2($elm$html$Html$Attributes$style, 'display', 'flex'),
 				A2($elm$html$Html$Attributes$style, 'flex-direction', 'column'),
-				A2($elm$html$Html$Attributes$style, 'justify-content', 'center')
+				A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+				A2($elm$html$Html$Attributes$style, 'max-width', '700px')
 			]),
 		_List_fromArray(
 			[
@@ -5692,7 +5693,7 @@ var $author$project$Main$view = function (model) {
 							$elm$core$String$join,
 							' ',
 							_List_fromArray(
-								['0', '0', widthStr, heightStr])))
+								['0', '-5', widthStr, heightStr])))
 					]),
 				_Utils_ap(
 					A4($author$project$Background$drawBackground, width_, height_, width_ / 2, topBallRadius),
