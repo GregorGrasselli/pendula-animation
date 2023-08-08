@@ -70,9 +70,10 @@ view model =
               (
                (Background.drawBackground width_ height_ (width_ / 2) topBallRadius)
                ++
-               (List.concatMap (drawPendulum (width_/2, topBallRadius)) model.pendula)
+               (List.map (drawPendulum (width_/2, topBallRadius)) model.pendula)
               )
-            , Html.button [onClick TogglePlay, HA.style "margin-top" "5px"] [Html.text (if not model.play then "Play" else "Pause")]
+            , Html.button [onClick TogglePlay, HA.style "margin-top" "5px"]
+                [Html.text (if not model.play then "Play" else "Pause")]
             ]
 
 subscriptions : Model -> Sub Msg

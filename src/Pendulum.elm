@@ -33,26 +33,33 @@ updatePendulum timeSeconds pendulum =
     in
         ({ pendulum | currentAngle = newAngle, marked = newMarked }, command)
 
-drawPendulum : (Float, Float) -> Pendulum -> List (Svg.Svg Msg)
+radiansToDegreesStr : Float -> String
+-- Adding `-` in front to keep the rotation direction positive (svg rotate produces clockwise rotations)
+radiansToDegreesStr radians = -radians * 180 / pi |> String.fromFloat
+
+drawPendulum : (Float, Float) -> Pendulum -> Svg.Svg Msg
 drawPendulum ((originX, originY) as stringOrigin) pendulum =
     let d = distanceToWeightCenter pendulum
-        (circleX, circleY) = getPosition stringOrigin pendulum.currentAngle d
-        (stringX, stringY) = getPosition stringOrigin pendulum.currentAngle pendulum.stringLength
+        (circleX, circleY) = getPosition stringOrigin d
+        (stringX, stringY) = getPosition stringOrigin pendulum.stringLength
+        rotationCenter = String.fromFloat originX ++ " " ++ String.fromFloat originY
+        rotation = "rotate(" ++ radiansToDegreesStr pendulum.currentAngle ++ " " ++ rotationCenter ++ ")"
     in
-        [ circle [ cx circleX
-                 , cy circleY
-                 , r (String.fromFloat pendulum.weightRadius)
-                 , fill (circleFill pendulum.marked)
-                 , stroke "black"
-                 , strokeWidth "5"
-                 ] []
-        , line [ x1 stringX
-               , x2 (String.fromFloat originX)
-               , y1 stringY, y2 (String.fromFloat originY)
-               , stroke "black"
-               , strokeWidth "3"
-               ] []
-        ]
+        g [transform rotation]
+            [ circle [ cx circleX
+                     , cy circleY
+                     , r (String.fromFloat pendulum.weightRadius)
+                     , fill (circleFill pendulum.marked)
+                     , stroke "black"
+                     , strokeWidth "5"
+                     ] []
+            , line [ x1 stringX
+                   , x2 (String.fromFloat originX)
+                   , y1 stringY, y2 (String.fromFloat originY)
+                   , stroke "black"
+                   , strokeWidth "3"
+                   ] []
+            ]
 
 -- Making this bigger makes the pendulums faster (this is the actual value in cm/(s^2))
 gravitationalConstant : Float
@@ -67,13 +74,10 @@ getCurrentAngle  pendulum timeSeconds =
     in
         pendulum.initialAngle * cos (sqrt (gravitationalConstant/d) * timeSeconds)
 
-getCoordinateFromPolar : Float -> Float -> Float -> String
-getCoordinateFromPolar origin multiplier distance = String.fromFloat (origin + multiplier * distance)
-
-getPosition : (Float, Float) -> Float -> Float -> (String, String)
-getPosition (originX, originY) angle distance =
-    ( getCoordinateFromPolar originX (sin angle) distance
-    , getCoordinateFromPolar originY (cos angle) distance
+getPosition : (Float, Float) -> Float -> (String, String)
+getPosition (originX, originY) distance =
+    ( String.fromFloat originX
+    , String.fromFloat (originY + distance)
     )
 
 

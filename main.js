@@ -5498,22 +5498,6 @@ var $author$project$Main$update = F2(
 	});
 var $author$project$Messages$TogglePlay = {$: 'TogglePlay'};
 var $elm$html$Html$button = _VirtualDom_node('button');
-var $elm$core$List$append = F2(
-	function (xs, ys) {
-		if (!ys.b) {
-			return xs;
-		} else {
-			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
-		}
-	});
-var $elm$core$List$concat = function (lists) {
-	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
-};
-var $elm$core$List$concatMap = F2(
-	function (f, list) {
-		return $elm$core$List$concat(
-			A2($elm$core$List$map, f, list));
-	});
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
 var $elm$svg$Svg$circle = $elm$svg$Svg$trustedNode('circle');
@@ -5580,68 +5564,70 @@ var $author$project$Background$drawBackground = F4(
 var $author$project$Pendulum$circleFill = function (marked) {
 	return marked ? 'blue' : 'transparent';
 };
-var $author$project$Pendulum$getCoordinateFromPolar = F3(
-	function (origin, multiplier, distance) {
-		return $elm$core$String$fromFloat(origin + (multiplier * distance));
-	});
-var $author$project$Pendulum$getPosition = F3(
-	function (_v0, angle, distance) {
+var $elm$svg$Svg$g = $elm$svg$Svg$trustedNode('g');
+var $author$project$Pendulum$getPosition = F2(
+	function (_v0, distance) {
 		var originX = _v0.a;
 		var originY = _v0.b;
 		return _Utils_Tuple2(
-			A3(
-				$author$project$Pendulum$getCoordinateFromPolar,
-				originX,
-				$elm$core$Basics$sin(angle),
-				distance),
-			A3(
-				$author$project$Pendulum$getCoordinateFromPolar,
-				originY,
-				$elm$core$Basics$cos(angle),
-				distance));
+			$elm$core$String$fromFloat(originX),
+			$elm$core$String$fromFloat(originY + distance));
 	});
+var $elm$core$Basics$pi = _Basics_pi;
+var $author$project$Pendulum$radiansToDegreesStr = function (radians) {
+	return $elm$core$String$fromFloat(((-radians) * 180) / $elm$core$Basics$pi);
+};
+var $elm$svg$Svg$Attributes$transform = _VirtualDom_attribute('transform');
 var $author$project$Pendulum$drawPendulum = F2(
 	function (stringOrigin, pendulum) {
 		var originX = stringOrigin.a;
 		var originY = stringOrigin.b;
+		var rotationCenter = $elm$core$String$fromFloat(originX) + (' ' + $elm$core$String$fromFloat(originY));
+		var rotation = 'rotate(' + ($author$project$Pendulum$radiansToDegreesStr(pendulum.currentAngle) + (' ' + (rotationCenter + ')')));
 		var d = $author$project$Pendulum$distanceToWeightCenter(pendulum);
-		var _v0 = A3($author$project$Pendulum$getPosition, stringOrigin, pendulum.currentAngle, pendulum.stringLength);
+		var _v0 = A2($author$project$Pendulum$getPosition, stringOrigin, pendulum.stringLength);
 		var stringX = _v0.a;
 		var stringY = _v0.b;
-		var _v1 = A3($author$project$Pendulum$getPosition, stringOrigin, pendulum.currentAngle, d);
+		var _v1 = A2($author$project$Pendulum$getPosition, stringOrigin, d);
 		var circleX = _v1.a;
 		var circleY = _v1.b;
-		return _List_fromArray(
-			[
-				A2(
-				$elm$svg$Svg$circle,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$cx(circleX),
-						$elm$svg$Svg$Attributes$cy(circleY),
-						$elm$svg$Svg$Attributes$r(
-						$elm$core$String$fromFloat(pendulum.weightRadius)),
-						$elm$svg$Svg$Attributes$fill(
-						$author$project$Pendulum$circleFill(pendulum.marked)),
-						$elm$svg$Svg$Attributes$stroke('black'),
-						$elm$svg$Svg$Attributes$strokeWidth('5')
-					]),
-				_List_Nil),
-				A2(
-				$elm$svg$Svg$line,
-				_List_fromArray(
-					[
-						$elm$svg$Svg$Attributes$x1(stringX),
-						$elm$svg$Svg$Attributes$x2(
-						$elm$core$String$fromFloat(originX)),
-						$elm$svg$Svg$Attributes$y1(stringY),
-						$elm$svg$Svg$Attributes$y2(
-						$elm$core$String$fromFloat(originY)),
-						$elm$svg$Svg$Attributes$stroke('black'),
-						$elm$svg$Svg$Attributes$strokeWidth('3')
-					]),
-				_List_Nil)
-			]);
+		return A2(
+			$elm$svg$Svg$g,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$transform(rotation)
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$svg$Svg$circle,
+					_List_fromArray(
+						[
+							$elm$svg$Svg$Attributes$cx(circleX),
+							$elm$svg$Svg$Attributes$cy(circleY),
+							$elm$svg$Svg$Attributes$r(
+							$elm$core$String$fromFloat(pendulum.weightRadius)),
+							$elm$svg$Svg$Attributes$fill(
+							$author$project$Pendulum$circleFill(pendulum.marked)),
+							$elm$svg$Svg$Attributes$stroke('black'),
+							$elm$svg$Svg$Attributes$strokeWidth('5')
+						]),
+					_List_Nil),
+					A2(
+					$elm$svg$Svg$line,
+					_List_fromArray(
+						[
+							$elm$svg$Svg$Attributes$x1(stringX),
+							$elm$svg$Svg$Attributes$x2(
+							$elm$core$String$fromFloat(originX)),
+							$elm$svg$Svg$Attributes$y1(stringY),
+							$elm$svg$Svg$Attributes$y2(
+							$elm$core$String$fromFloat(originY)),
+							$elm$svg$Svg$Attributes$stroke('black'),
+							$elm$svg$Svg$Attributes$strokeWidth('3')
+						]),
+					_List_Nil)
+				]));
 	});
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
@@ -5698,7 +5684,7 @@ var $author$project$Main$view = function (model) {
 				_Utils_ap(
 					A4($author$project$Background$drawBackground, width_, height_, width_ / 2, topBallRadius),
 					A2(
-						$elm$core$List$concatMap,
+						$elm$core$List$map,
 						$author$project$Pendulum$drawPendulum(
 							_Utils_Tuple2(width_ / 2, topBallRadius)),
 						model.pendula))),
